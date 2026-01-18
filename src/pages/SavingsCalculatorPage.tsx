@@ -11,13 +11,15 @@ import { Tabs } from 'shared/ui/Tabs';
 import { SavingsProductInfo } from 'entities/savings/ui/SavingsProductInfo';
 import { SavingsProductListSection } from 'entities/savings/ui/SavingsProductListSection';
 
-import { filterAvailableProducts } from 'features/savings-calculator/lib/filterAvailableProducts';
 import { isSelectionReady } from 'features/savings-calculator/lib/savingsConditionValidators';
+import {
+  selectAvailableProducts,
+  selectRecommendedProducts,
+} from 'features/savings-calculator/lib/savingsProductsSelectors';
 import { SavingsCondition } from 'features/savings-calculator/model/types';
 import { SavingsProductDataBoundary } from 'features/savings-calculator/ui/boundary/SavingsProductDataBoundary';
 import { AmountInput } from 'features/savings-calculator/ui/input/AmountInput';
 import { SavingsTermSelect } from 'features/savings-calculator/ui/input/SavingsTermSelect';
-import { RecommendedProductFilter } from 'features/savings-calculator/ui/recommendation/RecommendedProductFilter';
 import { CalculationResultAmount } from 'features/savings-calculator/ui/result/CalculationResultAmount';
 import { CalculationResultSection } from 'features/savings-calculator/ui/result/CalculationResultSection';
 
@@ -71,7 +73,7 @@ export function SavingsCalculatorPage() {
         </Tabs.List>
 
         <SavingsProductDataBoundary
-          select={isSelectionReady(condition) ? filterAvailableProducts(condition) : undefined}
+          select={isSelectionReady(condition) ? selectAvailableProducts(condition) : undefined}
         >
           {availableProducts => (
             <>
@@ -133,27 +135,23 @@ export function SavingsCalculatorPage() {
                 />
                 <Spacing size={12} />
 
-                <RecommendedProductFilter candidateProducts={availableProducts}>
-                  {recommendedProducts => (
-                    <SavingsProductListSection
-                      products={recommendedProducts}
-                      emptyFallback={<EmptyListItem message="적합한 추천 상품이 없습니다." />}
-                    >
-                      {map(product => (
-                        <ListRow
-                          key={product.id}
-                          contents={<SavingsProductInfo product={product} />}
-                          right={selectedProductId === product.id && <CheckCircleIcon />}
-                          onClick={() =>
-                            setSearchParams(toggleQueryParam({ name: 'productId', value: product.id }), {
-                              replace: true,
-                            })
-                          }
-                        />
-                      ))}
-                    </SavingsProductListSection>
-                  )}
-                </RecommendedProductFilter>
+                <SavingsProductListSection
+                  products={selectRecommendedProducts(availableProducts)}
+                  emptyFallback={<EmptyListItem message="적합한 추천 상품이 없습니다." />}
+                >
+                  {map(product => (
+                    <ListRow
+                      key={product.id}
+                      contents={<SavingsProductInfo product={product} />}
+                      right={selectedProductId === product.id && <CheckCircleIcon />}
+                      onClick={() =>
+                        setSearchParams(toggleQueryParam({ name: 'productId', value: product.id }), {
+                          replace: true,
+                        })
+                      }
+                    />
+                  ))}
+                </SavingsProductListSection>
 
                 <Spacing size={40} />
               </Tabs.Panel>
