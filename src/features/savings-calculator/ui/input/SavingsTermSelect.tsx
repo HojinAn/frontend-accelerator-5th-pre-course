@@ -5,14 +5,17 @@ interface SavingsTermSelectProps {
   title: string;
   value: number;
   onChange: (value: number) => void;
+  options: Array<{ value: number; label: string }>;
 }
 
-export function SavingsTermSelect({ label, title, value, onChange }: SavingsTermSelectProps) {
+export function SavingsTermSelect({ label, title, value, onChange, options }: SavingsTermSelectProps) {
   return (
     <SelectBottomSheet label={label} title={title} value={value} onChange={onChange}>
-      <SelectBottomSheet.Option value={6}>6개월</SelectBottomSheet.Option>
-      <SelectBottomSheet.Option value={12}>12개월</SelectBottomSheet.Option>
-      <SelectBottomSheet.Option value={24}>24개월</SelectBottomSheet.Option>
+      {options.map(option => (
+        <SelectBottomSheet.Option key={option.value} value={option.value}>
+          {option.label}
+        </SelectBottomSheet.Option>
+      ))}
     </SelectBottomSheet>
   );
 }
